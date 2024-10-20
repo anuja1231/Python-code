@@ -1,0 +1,227 @@
+Q1
+import pandas as pd
+
+# Sample data: temperatures for 5 cities over 7 days (in °C)
+data = {
+    'City': ['City_A', 'City_B', 'City_C', 'City_D', 'City_E'],
+    'Day_1': [30, 32, 33, 31, 29],
+    'Day_2': [28, 35, 34, 32, 30],
+    'Day_3': [27, 36, 35, 33, 31],
+    'Day_4': [31, 37, 32, 34, 33],
+    'Day_5': [30, 35, 36, 36, 34],
+    'Day_6': [29, 34, 33, 35, 35],
+    'Day_7': [32, 33, 31, 34, 36]
+}
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# 1. Calculating the average temperature per city
+df['Average_Temperature'] = df.iloc[:, 1:].mean(axis=1)
+print("Average temperature per city:\n", df[['City', 'Average_Temperature']], "\n")
+
+# 2. Finding the hottest day overall and in each city
+df['Hottest_Day'] = df.iloc[:, 1:8].idxmax(axis=1)
+print("Hottest day in each city:\n", df[['City', 'Hottest_Day']], "\n")
+
+# Hottest day overall (Max temperature across all cities and days)
+hottest_overall = df.iloc[:, 1:8].max().max()
+hottest_day_overall = df.iloc[:, 1:8].max().idxmax()
+print(f"Hottest day overall: {hottest_day_overall} with {hottest_overall}°C\n")
+
+# 3. Identifying the city with the highest average temperature
+city_highest_avg_temp = df.loc[df['Average_Temperature'].idxmax(), 'City']
+print(f"City with the highest average temperature: {city_highest_avg_temp}\n")
+
+# 4. Identifying the days where the temperature in any city exceeded 35°C
+days_exceed_35 = df.iloc[:, 1:8].apply(lambda x: x > 35, axis=0)
+print("Days where temperature exceeded 35°C:\n", days_exceed_35.any(), "\n")
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q2
+
+import numpy as np
+
+def rgb_to_binary(image, threshold=128):
+    grayscale = 0.2989 * image[:, :, 0] + 0.5870 * image[:, :, 1] + 0.1140 * image[:, :, 2]
+    return np.where(grayscale > threshold, 255, 0)
+
+image = np.random.randint(0, 256, (100, 100, 3), dtype=np.uint8)  
+binary_image = rgb_to_binary(image)
+
+print("Binary Image:\n", binary_image)
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q3
+
+import numpy as np
+
+# Example DNA sequence represented as a NumPy array
+dna_sequence = np.array(list('ATGCGATACGTAGCTAGGCGTATCGATCGTAGCTA'))
+
+# 1. Count the frequency of each base (A, T, C, G)
+def count_bases(dna_seq):
+    unique, counts = np.unique(dna_seq, return_counts=True)
+    base_counts = dict(zip(unique, counts))
+    return base_counts
+
+base_frequencies = count_bases(dna_sequence)
+print("Base frequencies:", base_frequencies)
+
+# 2. Find the most common base
+most_common_base = max(base_frequencies, key=base_frequencies.get)
+print(f"Most common base: {most_common_base}")
+
+# 3. Find base pair sequences longer than a specified threshold
+def find_long_sequences(dna_seq, threshold):
+    sequences = []
+    current_base = dna_seq[0]
+    current_length = 1
+    
+    for i in range(1, len(dna_seq)):
+        if dna_seq[i] == current_base:
+            current_length += 1
+        else:
+            if current_length > threshold:
+                sequences.append((current_base, current_length))
+            current_base = dna_seq[i]
+            current_length = 1
+    # Check the last sequence
+    if current_length > threshold:
+        sequences.append((current_base, current_length))
+    
+    return sequences
+
+threshold = 2  # You can set any threshold value
+long_sequences = find_long_sequences(dna_sequence, threshold)
+print(f"Sequences longer than {threshold}: {long_sequences}")
+
+# 4. Reverse the entire DNA sequence
+def reverse_dna(dna_seq):
+    return dna_seq[::-1]
+
+reversed_sequence = reverse_dna(dna_sequence)
+print("Reversed DNA sequence:", ''.join(reversed_sequence))
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q4
+
+import numpy as np
+import pandas as pd
+
+# Sample stock price data for 4 stocks over 10 days
+data = {
+    'Stock_A': [100, 102, 101, 104, 105, 106, 107, 109, 110, 108],
+    'Stock_B': [200, 198, 197, 195, 193, 190, 192, 191, 193, 195],
+    'Stock_C': [300, 305, 307, 310, 312, 311, 310, 309, 308, 310],
+    'Stock_D': [150, 153, 152, 155, 157, 158, 159, 162, 161, 160]
+}
+
+# Convert the data into a pandas DataFrame for easier manipulation
+df = pd.DataFrame(data)
+
+# 1. Calculate the daily percentage change for each stock
+percentage_change = df.pct_change() * 100  # Daily percentage change
+print("Daily percentage change:\n", percentage_change, "\n")
+
+# 2. Identify the stock with the highest volatility (variance in daily returns)
+volatility = percentage_change.var()  # Variance of the daily percentage returns
+most_volatile_stock = volatility.idxmax()
+print(f"Stock with the highest volatility: {most_volatile_stock}\n")
+
+# 3. Determine the best-performing stock over the 10-day period
+# Best-performing stock is the one with the highest percentage increase over the entire period
+total_return = (df.iloc[-1] - df.iloc[0]) / df.iloc[0] * 100  # Total return percentage
+best_performing_stock = total_return.idxmax()
+print(f"Best-performing stock over the 10-day period: {best_performing_stock}\n")
+
+# 4. Find the days where any stock price dropped more than 5% from the previous day
+drops = percentage_change < -5  # Boolean DataFrame where True indicates a drop > 5%
+days_with_drops = drops.any(axis=1)  # Find days where any stock dropped > 5%
+days_with_significant_drops = df.index[days_with_drops].tolist()
+print(f"Days with price drops greater than 5%: {days_with_significant_drops}\n")
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mean
+Q1
+// Import the Express module
+const express = require('express');
+const bodyParser = require('body-parser');
+
+// Create an instance of Express
+const app = express();
+
+// Middleware to parse URL-encoded data from POST requests
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve a basic form to input First Name and Last Name
+app.get('/', (req, res) => {
+    res.send(`
+        <form action="/greet" method="POST">
+            <label for="firstName">First Name: </label>
+            <input type="text" id="firstName" name="firstName" required><br><br>
+            <label for="lastName">Last Name: </label>
+            <input type="text" id="lastName" name="lastName" required><br><br>
+            <button type="submit">Submit</button>
+        </form>
+    `);
+});
+
+// Handle the form submission and greet the user
+app.post('/greet', (req, res) => {
+    const { firstName, lastName } = req.body;
+    res.send(Hello ${firstName} ${lastName});
+});
+
+// Start the server and listen on port 3000
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(Server is running on http://localhost:${PORT});
+});
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Q2
+
+// Import the necessary modules
+const express = require('express');
+const bodyParser = require('body-parser');
+
+// Create an instance of Express
+const app = express();
+
+// Middleware to parse URL-encoded data from POST requests
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Store courses in an array
+let courses = [];
+
+// Serve a basic form to input course names
+app.get('/', (req, res) => {
+    res.send(`
+        <h1>Course Submission</h1>
+        <form action="/add-course" method="POST">
+            <label for="courseName">Course Name: </label>
+            <input type="text" id="courseName" name="courseName" required><br><br>
+            <button type="submit">Add Course</button>
+        </form>
+
+        <h2>Courses List</h2>
+        <ul>
+            ${courses.map(course => <li>${course}</li>).join('')}
+        </ul>
+    `);
+});
+
+// Handle the form submission and add the course to the list
+app.post('/add-course', (req, res) => {
+    const courseName = req.body.courseName;
+    if (courseName) {
+        courses.push(courseName);  // Add the course to the array
+    }
+    res.redirect('/');  // Redirect back to the form and show the updated list
+});
+
+// Start the server and listen on port 3000
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(Server is running on http://localhost:${PORT});
+});
